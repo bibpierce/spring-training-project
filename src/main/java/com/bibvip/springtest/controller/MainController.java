@@ -5,13 +5,12 @@ import com.bibvip.springtest.services.UserService;
 import com.bibvip.springtest.services.impl.WriteData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 
@@ -35,7 +34,7 @@ public class MainController {
             byte[] prm = primaryId.getBytes();
             byte[] sec = secondaryId.getBytes();
 
-            User user = new User(1L,name,pic,vac,prm,sec,
+            User user = new User(1L, name, pic, vac, prm, sec,
                     picture.getOriginalFilename(),
                     vacCard.getOriginalFilename(),
                     primaryId.getOriginalFilename(),
@@ -44,6 +43,8 @@ public class MainController {
             userService.insert(user);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (DataIntegrityViolationException e) {
+            log.info("Name already Exist");
         }
     }
 
@@ -67,17 +68,23 @@ public class MainController {
                            @RequestParam("primaryId") MultipartFile primaryId,
                            @RequestParam("secondaryId") MultipartFile secondaryId) throws IOException {
 
-        byte[] pic = picture.getBytes();
-        byte[] vac = vacCard.getBytes();
-        byte[] prm = primaryId.getBytes();
-        byte[] sec = secondaryId.getBytes();
-        User user = new User(id,name,pic,vac,prm,sec,
-                picture.getOriginalFilename(),
-                vacCard.getOriginalFilename(),
-                primaryId.getOriginalFilename(),
-                secondaryId.getOriginalFilename());
+        try {
+            byte[] pic = picture.getBytes();
+            byte[] vac = vacCard.getBytes();
+            byte[] prm = primaryId.getBytes();
+            byte[] sec = secondaryId.getBytes();
+            User user = new User(id, name, pic, vac, prm, sec,
+                    picture.getOriginalFilename(),
+                    vacCard.getOriginalFilename(),
+                    primaryId.getOriginalFilename(),
+                    secondaryId.getOriginalFilename());
 
-        userService.update(user);
+            userService.update(user);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DataIntegrityViolationException e) {
+            log.info("Name already Exist");
+        }
     }
 
     @GetMapping("/sel/{id}")
@@ -98,7 +105,7 @@ public class MainController {
             User singleListOfUser = userService.singleExport(id);
             WriteData sinExport = new WriteData();
             sinExport.singleExport(singleListOfUser);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             log.info("Invalid ID");
         }
     }
