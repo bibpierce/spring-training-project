@@ -56,7 +56,6 @@ public class MainController {
 
     @DeleteMapping("/del/{id}")
     public User deleteUser(@Valid @PathVariable Long id) throws Exception {
-
         return userService.delById(id);
     }
 

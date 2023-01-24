@@ -6,7 +6,11 @@ import com.bibvip.springtest.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Scanner;
 
 @Repository
 public class UserMyBatisImpl implements UserRepository {
@@ -43,8 +47,22 @@ public class UserMyBatisImpl implements UserRepository {
 
     @Override
     public User delById(Long id) {
+
         User user = findById(id);
         userMapper.delById(id);
         return user;
+    }
+
+    public static void main(String[] args) {
+
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            String s = in.readLine();
+            System.out.println(s);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
